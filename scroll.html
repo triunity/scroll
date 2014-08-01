@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+		<meta name="format-detection" content="telephone=no" />
+		<title>划动封装</title>
+		<style type="text/css">
+#container{
+	width: 100%;
+	height: 1000px;
+	background: yellow;
+}
+		</style>
+	</head>
+	<body>
+		<div id="container">
+			<div></div>
+		</div>
+	</body>
+	<script type="text/javascript">
+		// 定义类
+		function Slider (divDom, args) {
+			this.dom = divDom;
+			this.handler(args);
+		};
+
+		/**
+		*
+		* 说明：绑定事件函数
+		*
+		* 方法：handler
+		*
+		* 参数：{
+		* 			callback(function) 回调函数。
+		* 			direction(boolean) 方向。true：手指往上划动；false：手指往下滑动。
+		* 		}
+		*
+		**/
+		Slider.prototype.handler = function (args) {
+			// 下拉效果
+			if (!args.direction) {
+				this.delta = document.createElement('div');
+				this.dom.parentNode.insertBefore(this.delta, this.dom);
+			};
+
+			var self = this;
+
+			var handlerStart = function (evt) {
+				self.startY = evt.touches[0].pageY;
+				self.offsetY = 0;
+			};
+			var handlerMove = function (evt) {
+				// evt.preventDefault();
+				self.offsetY = evt.touches[0].pageY - self.startY;
+				
+				// 下拉效果
+				if (!args.direction && self.delta) {
+					self.delta.style.height = self.offsetY + 'px';
+				};
+			};
+			var handlerEnd = function (evt) {
+				if (args.direction) {
+					// 手指上划
+					if (self.offsetY < -20) {
+						args.callback();
+					};
+				} else {
+					// 手指下划
+					self.delta.style.height = 0;
+					// self.dom.parentNode.removeChild(self.delta);
+
+					if (self.offsetY > 20) {
+						args.callback();
+					};
+				};
+			};
+
+			this.dom.addEventListener('touchstart', handlerStart, false);
+			this.dom.addEventListener('touchmove', handlerMove, false);
+			this.dom.addEventListener('touchend', handlerEnd, false);
+		};
+
+		/**
+		*
+		* 说明：解除绑定
+		*
+		* 方法：unhandler
+		*
+		**/
+		Slider.prototype.unhandler = function () {
+			this.dom.removeEventListener('touchstart', handlerStart, false);
+			this.dom.removeEventListener('touchmove', handlerMove, false);
+			this.dom.removeEventListener('touchend', handlerEnd, false);
+		};
+
+		var d = document.getElementById('container');
+		var asdf = new Slider(d, {direction: false, callback: function () {console.log('test')}});
+	</script>
+</html>
