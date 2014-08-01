@@ -14,9 +14,7 @@
 		</style>
 	</head>
 	<body>
-		<div id="container">
-			<div></div>
-		</div>
+		<div id="container"></div>
 	</body>
 	<script type="text/javascript">
 		// 定义类
@@ -95,6 +93,6 @@
 		};
 
 		var d = document.getElementById('container');
-		var asdf = new Slider(d, {direction: false, callback: function () {console.log('test')}});
+		new Slider(d, {direction: false, callback: function () {console.log('test')}});
 	</script>
 </html>
